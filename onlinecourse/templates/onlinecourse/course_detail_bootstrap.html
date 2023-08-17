@@ -62,7 +62,7 @@
                     <form id="questionform" action="{% url 'onlinecourse:submit_exam' %}" method="post">
                         {% csrf_token %}
                         <!-- Example Questions -->
-                        {% for question in exam_questions %}
+                        {% for question in course.question_set.all %}
                         <div class="card mb-3">
                             <div class="card-header"><h5>{{ question.question_text }}</h5></div>
                             <div class="card-body">
@@ -85,6 +85,13 @@
                 </div>
                 {% endif %}
             </div>
+
+            <!-- Not Authenticated -->
+            {% if not user.is_authenticated %}
+            <div class="alert alert-info mt-4">
+                You are not authenticated. Please log in to access the exam.
+            </div>
+            {% endif %}
     </div>
 </body>
 </html>
