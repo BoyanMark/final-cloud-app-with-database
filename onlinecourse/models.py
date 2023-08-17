@@ -1,5 +1,6 @@
 import sys
 from django.utils.timezone import now
+
 try:
     from django.db import models
 except Exception:
@@ -29,43 +30,38 @@ class Learner(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    STUDENT = 'student'
-    DEVELOPER = 'developer'
-    DATA_SCIENTIST = 'data_scientist'
-    DATABASE_ADMIN = 'dba'
+    STUDENT = "student"
+    DEVELOPER = "developer"
+    DATA_SCIENTIST = "data_scientist"
+    DATABASE_ADMIN = "dba"
     OCCUPATION_CHOICES = [
-        (STUDENT, 'Student'),
-        (DEVELOPER, 'Developer'),
-        (DATA_SCIENTIST, 'Data Scientist'),
-        (DATABASE_ADMIN, 'Database Admin')
+        (STUDENT, "Student"),
+        (DEVELOPER, "Developer"),
+        (DATA_SCIENTIST, "Data Scientist"),
+        (DATABASE_ADMIN, "Database Admin"),
     ]
     occupation = models.CharField(
-        null=False,
-        max_length=20,
-        choices=OCCUPATION_CHOICES,
-        default=STUDENT
+        null=False, max_length=20, choices=OCCUPATION_CHOICES, default=STUDENT
     )
     social_link = models.URLField(max_length=200)
 
     def __str__(self):
-        return self.user.username + "," + \
-               self.occupation
+        return self.user.username + "," + self.occupation
 
 
 # Course model
 class Course(models.Model):
-    name = models.CharField(null=False, max_length=30, default='online course')
-    image = models.ImageField(upload_to='course_images/')
+    name = models.CharField(null=False, max_length=30, default="online course")
+    image = models.ImageField(upload_to="course_images/")
     description = models.CharField(max_length=1000)
     pub_date = models.DateField(null=True)
     instructors = models.ManyToManyField(Instructor)
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Enrollment')
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Enrollment")
     total_enrollment = models.IntegerField(default=0)
     is_enrolled = False
 
     def __str__(self):
-        return "Name: " + self.name + "," + \
-               "Description: " + self.description
+        return "Name: " + self.name + "," + "Description: " + self.description
 
 
 # Lesson model
@@ -80,14 +76,10 @@ class Lesson(models.Model):
 # <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
 # And we could use the enrollment to track information such as exam submissions
 class Enrollment(models.Model):
-    AUDIT = 'audit'
-    HONOR = 'honor'
-    BETA = 'BETA'
-    COURSE_MODES = [
-        (AUDIT, 'Audit'),
-        (HONOR, 'Honor'),
-        (BETA, 'BETA')
-    ]
+    AUDIT = "audit"
+    HONOR = "honor"
+    BETA = "BETA"
+    COURSE_MODES = [(AUDIT, "Audit"), (HONOR, "Honor"), (BETA, "BETA")]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date_enrolled = models.DateField(default=now)
@@ -107,13 +99,15 @@ class Question(models.Model):
 
     def is_get_score(self, selected_ids):
         all_answers = self.choice_set.filter(is_correct=True).count()
-        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        selected_correct = self.choice_set.filter(
+            is_correct=True, id__in=selected_ids
+        ).count()
         if all_answers == selected_correct:
             return True
         else:
             return False
-        
-    
+
+
 class Choice(models.Model):
     # Foreign key to question
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -121,10 +115,10 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
     # is_correct
     is_correct = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return self.choice_text
-    
+
 
 class Submission(models.Model):
     # Foreign key to enrollment
@@ -137,11 +131,15 @@ class Submission(models.Model):
     grade = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.enrollment.user.username + "," + \
-               self.enrollment.course.name + "," + \
-               str(self.submission_time) + "," + \
-               str(self.grade)
-    
+        return (
+            self.enrollment.user.username
+            + ","
+            + self.enrollment.course.name
+            + ","
+            + str(self.submission_time)
+            + ","
+            + str(self.grade)
+        )
+
     def get_selected_choices(self):
         return self.choices.all()
-    
