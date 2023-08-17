@@ -80,6 +80,91 @@
                             </div>
                         </div>
                         {% endfor %}
+
+                        <!-- New Question: What is Django? -->
+                        <div class="card mb-3">
+                            <div class="card-header"><h5>What is Django?</h5></div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_choice_1.id }}"
+                                                class="form-check-input" id="choice_{{ django_choice_1.id }}"
+                                                value="{{ django_choice_1.id }}">{{ django_choice_1.choice_text }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_choice_2.id }}"
+                                                class="form-check-input" id="choice_{{ django_choice_2.id }}"
+                                                value="{{ django_choice_2.id }}">{{ django_choice_2.choice_text }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- New Question: What is Django Model? -->
+                        <div class="card mb-3">
+                            <div class="card-header"><h5>What is Django Model?</h5></div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_model_choice_1.id }}"
+                                                class="form-check-input" id="choice_{{ django_model_choice_1.id }}"
+                                                value="{{ django_model_choice_1.id }}">{{ django_model_choice_1.choice_text }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_model_choice_2.id }}"
+                                                class="form-check-input" id="choice_{{ django_model_choice_2.id }}"
+                                                value="{{ django_model_choice_2.id }}">{{ django_model_choice_2.choice_text }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_model_choice_3.id }}"
+                                                class="form-check-input" id="choice_{{ django_model_choice_3.id }}"
+                                                value="{{ django_model_choice_3.id }}">{{ django_model_choice_3.choice_text }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Question: What is Django View? -->
+                        <div class="card mb-3">
+                            <div class="card-header"><h5>What is Django View?</h5></div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_view_choice_1.id }}"
+                                                class="form-check-input" id="choice_{{ django_view_choice_1.id }}"
+                                                value="{{ django_view_choice_1.id }}">{{ django_view_choice_1.choice_text }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_view_choice_2.id }}"
+                                                class="form-check-input" id="choice_{{ django_view_choice_2.id }}"
+                                                value="{{ django_view_choice_2.id }}">{{ django_view_choice_2.choice_text }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="choice_{{ django_view_choice_3.id }}"
+                                                class="form-check-input" id="choice_{{ django_view_choice_3.id }}"
+                                                value="{{ django_view_choice_3.id }}">{{ django_view_choice_3.choice_text }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <input class="btn btn-success btn-block" type="submit" value="Submit">
                     </form>
                 </div>
