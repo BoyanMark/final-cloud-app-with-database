@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect
+from django.db.models import Sum
 
 # <HINT> Import any new Models here
 from .models import (
@@ -123,73 +124,54 @@ def enroll(request, course_id):
 
 ###### submit view task
 def extract_answers(request):
-    submitted_answers = []
+    submitted_anwsers = []
     for key in request.POST:
         if key.startswith("choice"):
             value = request.POST[key]
             choice_id = int(value)
-            submitted_answers.append(choice_id)
-    return submitted_answers
+            submitted_anwsers.append(Choice.objects.get(id=choice_id))
+    return submitted_anwsers
 
 
 def submit(request, course_id):
-    if not request.user.is_authenticated:
-        return redirect("onlinecourse:login")
-
+    course = get_object_or_404(Course, pk=course_id)
     user = request.user
-    course = Course.objects.get(pk=course_id)
+
+    if not user.is_authenticated:
+        return redirect("onlinecourse:login")
 
     try:
         enrollment = Enrollment.objects.get(user=user, course=course)
     except Enrollment.DoesNotExist:
-        # Handle the case where the user is not enrolled in the course
         return redirect("onlinecourse:course_details", pk=course_id)
 
     submission = Submission.objects.create(enrollment=enrollment)
-
     selected_choices = extract_answers(request)
+    submission.choices.set(selected_choices)
+    submission_id = submission.id
 
-    submission.choices.add(*selected_choices)
-    submission.save()
-
-    return redirect(
-        "onlinecourse:show_exam_result",
-        course_id=course_id,
-        submission_id=submission.id,
+    return HttpResponseRedirect(
+        reverse("onlinecourse:show_exam_result", args=(course_id, submission_id))
     )
 
 
 def show_exam_result(request, course_id, submission_id):
-    try:
-        course = Course.objects.get(pk=course_id)
-        submission = Submission.objects.get(pk=submission_id, enrollment__course=course)
-    except (Course.DoesNotExist, Submission.DoesNotExist):
-        # Handle the case where the course or submission doesn't exist
-        return render(
-            request,
-            "onlinecourse/exam_result.html",
-            {"error_message": "Invalid course or submission ID"},
-        )
+    course = get_object_or_404(Course, pk=course_id)
+    submission = get_object_or_404(
+        Submission, pk=submission_id, enrollment__course=course
+    )
 
-    selected_choice_ids = submission.choices.values_list("id", flat=True)
-
-    total_score = 0
-    question_results = []
-
-    for question in course.question_set.all():
-        is_correct = all(
-            choice.is_correct
-            for choice in question.choices.filter(id__in=selected_choice_ids)
-        )
-        if is_correct:
-            total_score += question.grade
-        question_results.append({"question": question, "is_correct": is_correct})
+    total_score = (
+        submission.choices.filter(is_correct=True).aggregate(Sum("question__grade"))[
+            "question__grade__sum"
+        ]
+        or 0
+    )
 
     context = {
         "course": course,
-        "selected_ids": selected_choice_ids,
-        "total_score": total_score,
-        "question_results": question_results,
+        "grade": total_score,
+        "choices": submission.choices.all(),
     }
 
-    return render(request, "onlinecourse/exam_result.html", context)
+    return render(request, "onlinecourse/exam_result_bootstrap.html", context)

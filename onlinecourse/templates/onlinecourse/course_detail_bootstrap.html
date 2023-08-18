@@ -41,38 +41,31 @@
 
     <!-- Page content -->
     <div class="container-fluid">
-            <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
-                    </div>
-                {% endfor %}
-            </div>
+        <h2>{{ course.name }}</h2>
+        <div class="card-columns-vertical">
+            {% for lesson in course.lesson_set.all %}
+            <div class="card mt-1" id="parent">
+                <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
+                <div class="card-body">{{lesson.content}}</div>
 
-            <!-- Task: show questions and choices -->
-            <div class="mt-4">
+                <!-- Task: show questions and choices -->
+    
                 {% if user.is_authenticated %}
-                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#exam">
-                    Show Course Exam
-                </button>
-
-                <div id="exam" class="collapse mt-3">
-                    <form id="questionform" action="{% url 'onlinecourse:submit_exam' %}" method="post">
+                <button data-toggle="collapse" class="btn btn-info btn-block" data-target="#exam_{{lesson.order|add:1}}">Start Exam</button>
+                <div id="exam_{{lesson.order|add:1}}" class="collapse indent">
+                    <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
                         {% csrf_token %}
-                        <!-- Example Questions -->
-                        {% for question in coursfor question_result in question_resultse.question_set.all %}
-                        <div class="card mb-3">
-                            <div class="card-header"><h5>{{ question.question_text }}</h5></div>
+                        {% for question in lesson.question_set.all %}
+                        <div class="card mt-1">
+                            <div class="card-header"><h5>{{question.content}}</h5></div>
                             <div class="card-body">
                                 <div class="form-group">
-                                    {% for choice in question.choices.all %}
+                                    {% for choice in question.choice_set.all %}
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="choice_{{ choice.id }}"
-                                                   class="form-check-input" id="choice_{{ choice.id }}"
-                                                   value="{{ choice.id }}">{{ choice.choice_text }}
+                                            <input type="checkbox" name="choice_{{choice.id}}"
+                                                   class="form-check-input" id="{{choice.id}}"
+                                                   value="{{choice.id}}">{{ choice.content  }}
                                         </label>
                                     </div>
                                     {% endfor %}
@@ -80,19 +73,16 @@
                             </div>
                         </div>
                         {% endfor %}
-
                         <input class="btn btn-success btn-block" type="submit" value="Submit">
                     </form>
                 </div>
                 {% endif %}
+    
             </div>
-
-            <!-- Not Authenticated -->
-            {% if not user.is_authenticated %}
-            <div class="alert alert-info mt-4">
-                You are not authenticated. Please log in to access the exam.
-            </div>
-            {% endif %}
+            <br>
+            <br>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>

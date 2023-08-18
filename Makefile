@@ -3,7 +3,7 @@ install: ## Install required packages from requirements.txt
 	python3 -m pip install -U -r requirements.txt
 
 format: ## Run black
-	black tests/ onlinecourse/
+	black onlinecourse/
 
 flake8: ## Run flake8
 	flake8 ./tests/ ./onlinecourse/
