@@ -90,56 +90,36 @@ class Enrollment(models.Model):
 ############
 # Question model
 class Question(models.Model):
-    # Foreign key to lesson
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    # question text
-    question_text = models.CharField(max_length=200)
-    # question grade/mark
-    grade = models.IntegerField(default=0)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    grade = models.IntegerField(default=50)
+    lesson = models.ManyToManyField(Lesson)
 
+    def __str__(self):
+        return "Question: " + self.content
+   
+    # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
-        all_answers = self.choice_set.filter(is_correct=True).count()
-        selected_correct = self.choice_set.filter(
-            is_correct=True, id__in=selected_ids
-        ).count()
-        if all_answers == selected_correct:
-            return True
-        else:
-            return False
+       all_answers = self.choice_set.filter(is_correct=True).count()
+       selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+       if all_answers == selected_correct:
+           return True
+       else:
+           return False
 
 
 class Choice(models.Model):
-    # Foreign key to question
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    # choice text
-    choice_text = models.CharField(max_length=200)
-    # is_correct
+    content = models.CharField(null=False, max_length=200)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.choice_text
+       return self.content
 
 
 class Submission(models.Model):
-    # Foreign key to enrollment
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    # choices
-    choices = models.ManyToManyField(Choice)
-    # submission time
-    submission_time = models.DateTimeField(default=now)
-    # grade
-    grade = models.IntegerField(default=0)
+    enrollment = models.ForeignKey(Enrollment, on_delete = models.CASCADE)
+    choice = models.ManyToManyField(Choice)
 
     def __str__(self):
-        return (
-            self.enrollment.user.username
-            + ","
-            + self.enrollment.course.name
-            + ","
-            + str(self.submission_time)
-            + ","
-            + str(self.grade)
-        )
-
-    def get_selected_choices(self):
-        return self.choices.all()
+        return f"submission:{self.pk}"
