@@ -40,6 +40,7 @@
     </nav>
 
     <!-- Page content -->
+    <!-- ... -->
     <div class="container-fluid">
         <h2>{{ course.name }}</h2>
         <div class="card-columns-vertical">
@@ -49,7 +50,6 @@
                 <div class="card-body">{{lesson.content}}</div>
 
                 <!-- Task: show questions and choices -->
-    
                 {% if user.is_authenticated %}
                 <button data-toggle="collapse" class="btn btn-info btn-block" data-target="#exam_{{lesson.order|add:1}}">Start Exam</button>
                 <div id="exam_{{lesson.order|add:1}}" class="collapse indent">
@@ -57,15 +57,15 @@
                         {% csrf_token %}
                         {% for question in lesson.question_set.all %}
                         <div class="card mt-1">
-                            <div class="card-header"><h5>{{question.content}}</h5></div>
+                            <div class="card-header"><h5>{{ question.question_text }}</h5></div>
                             <div class="card-body">
                                 <div class="form-group">
                                     {% for choice in question.choice_set.all %}
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="choice_{{choice.id}}"
-                                                   class="form-check-input" id="{{choice.id}}"
-                                                   value="{{choice.id}}">{{ choice.content  }}
+                                            <input type="checkbox" name="choice_{{ choice.id }}"
+                                                class="form-check-input" id="{{ choice.id }}"
+                                                value="{{ choice.id }}">{{ choice.choice_text }}
                                         </label>
                                     </div>
                                     {% endfor %}
@@ -77,12 +77,13 @@
                     </form>
                 </div>
                 {% endif %}
-    
             </div>
             <br>
             <br>
             {% endfor %}
         </div>
     </div>
+    <!-- ... -->
+
 </body>
 </html>
